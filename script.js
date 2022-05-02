@@ -1,9 +1,13 @@
-xRange = document.querySelector("#x")
-xText = document.querySelector("#x_text")
-yRange = document.querySelector("#y")
-yText = document.querySelector("#y_text")
-zRange = document.querySelector("#z")
-zText = document.querySelector("#z_text")
+const xRange = document.querySelector("#x")
+const xText = document.querySelector("#x_text")
+const yRange = document.querySelector("#y")
+const yText = document.querySelector("#y_text")
+const zRange = document.querySelector("#z")
+const zText = document.querySelector("#z_text")
+
+const wood = document.querySelector("#wood")
+const metal = document.querySelector("#metal")
+const brick = document.querySelector("#brick")
 
 
 //Canvas
@@ -14,7 +18,7 @@ const scene = new THREE.Scene();
 
 //Camera
 const camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 1000 );
-camera.position.z = 5;
+camera.position.z = 20;
 
 //Renderer
 const renderer = new THREE.WebGLRenderer({
@@ -27,7 +31,7 @@ const geometry = new THREE.BoxGeometry();
 
 //Materiales
 const material = new THREE.MeshBasicMaterial();
-material.color = new THREE.Color(0xE10000)
+material.color = new THREE.Color(0x50EF0B)
 
 //Mesh
 const cube = new THREE.Mesh( geometry, material );
@@ -35,6 +39,7 @@ scene.add( cube );
 
 //Functions
 
+//Rangos e Input
 xRange.oninput = (()=>{
     let value = xRange.value
     xText.value = value
@@ -71,22 +76,43 @@ zText.oninput = (()=>{
     growZ(value)
 })
 
-function growX(a) {
-    cube.scale.x = a*0.1;
-}
+//Escalar
 
-function growY(a) {
-    cube.scale.y = a*0.1;
+function growX(a) {
+    cube.scale.x = a;
 }
 
 function growZ(a) {
-    cube.scale.z = a*0.1;
+    cube.scale.y = a;
 }
+
+function growY(a) {
+    cube.scale.z = a;
+}
+
+//Cambiar color
+
+wood.addEventListener("click",function(){
+    if (wood.checked)
+        material.color = new THREE.Color(0x8C5A2A)
+})
+
+metal.addEventListener("click",function(){
+    if (metal.checked)
+        material.color = new THREE.Color(0x434347)
+})
+
+brick.addEventListener("click",function(){
+    if (brick.checked)
+        material.color = new THREE.Color(0xD60000)
+})
+
+//Renderizar
 
 function animate() {
     requestAnimationFrame( animate );
 
-    cube.rotation.x = 1;
+    cube.rotation.x = 0.2;
     cube.rotation.y = 1;
 
     renderer.render( scene, camera );
