@@ -1,3 +1,6 @@
+import { OrbitControls } from "./OrbitControls.js";
+import { TransformControls } from "./TransformControls.js";
+
 const xRange = document.querySelector("#x")
 const xText = document.querySelector("#x_text")
 const yRange = document.querySelector("#y")
@@ -17,8 +20,8 @@ const canvas = document.querySelector("canvas.webgl")
 const scene = new THREE.Scene();
 
 //Camera
-const camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 1000 );
-camera.position.z = 20;
+const camera = new THREE.PerspectiveCamera( 50, window.innerWidth / window.innerHeight, 0.1, 1000 );
+camera.position.set(5,2.5,5);
 
 //Renderer
 const renderer = new THREE.WebGLRenderer({
@@ -30,12 +33,38 @@ renderer.setSize(window.innerWidth*0.75,window.innerHeight*0.89);
 const geometry = new THREE.BoxGeometry();
 
 //Materiales
+const loader = new THREE.TextureLoader();
 const material = new THREE.MeshBasicMaterial();
-material.color = new THREE.Color(0x50EF0B)
+
+loader.load("texture/nice-background.png", (texture)=>{
+    scene.background = texture
+});
 
 //Mesh
 const cube = new THREE.Mesh( geometry, material );
+
+//Grid Helper
+const gridHelper = new THREE.GridHelper(100,100);
+scene.add(gridHelper)
 scene.add( cube );
+
+//OrbitControl y TransformControl
+let orbit = new OrbitControls(camera, renderer.domElement)
+let tControl = new TransformControls(camera, renderer.domElement)
+
+tControl.addEventListener("dragging-changed",(e)=>{
+    orbit.enabled = !e.value
+})
+
+tControl.attach(cube)
+scene.add(tControl)
+
+tControl.setMode("translate")
+
+loader.load("texture/wood.jpg",(texture)=>{
+    material.map = texture
+    animate()
+});
 
 //Functions
 
@@ -93,29 +122,30 @@ function growY(a) {
 //Cambiar color
 
 wood.addEventListener("click",function(){
-    if (wood.checked)
-        material.color = new THREE.Color(0x8C5A2A)
+    material.color = new THREE.Color(0x8C5A2A)
 })
 
 metal.addEventListener("click",function(){
-    if (metal.checked)
-        material.color = new THREE.Color(0x434347)
+    material.color = new THREE.Color(0x434347)
 })
 
 brick.addEventListener("click",function(){
-    if (brick.checked)
-        material.color = new THREE.Color(0xD60000)
+    material.color = new THREE.Color(0xD60000)
 })
+
+//Resize
+
+function resize() {
+    camera.aspect = window.innerWidth/window.innerHeight;
+    camera.updateProjectionMatrix();
+    renderer.setSize(window.innerWidth*0.75,window.innerHeight*0.89);
+}
 
 //Renderizar
 
 function animate() {
-    requestAnimationFrame( animate );
-
-    cube.rotation.x = 0.2;
-    cube.rotation.y = 1;
-
+    requestAnimationFrame(animate);
     renderer.render( scene, camera );
 };
 
-animate();
+window.addEventListener("resize", resize, false)
